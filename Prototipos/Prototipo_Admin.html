@@ -1,0 +1,2445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniAccess — Administrador TICS</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #F5F0E8;
+    --bg2:       #EDE7D9;
+    --bg3:       #E4DDD0;
+    --surface:   #FDFAF5;
+    --border:    #D4CCC0;
+    --border2:   #C8BEB0;
+    --ink:       #2C2416;
+    --ink2:      #6B5E4A;
+    --ink3:      #9E8E78;
+    --accent:    #2D5A3D;
+    --accent-l:  #3D7A52;
+    --accent-bg: #E8F0EA;
+    --red:       #8B2020;
+    --red-bg:    #F5E8E8;
+    --amber:     #8B6020;
+    --amber-bg:  #F5F0E0;
+    --blue:      #1A3A5C;
+    --blue-bg:   #E8EEF5;
+    --shadow:    0 1px 3px rgba(44,36,22,0.08), 0 4px 12px rgba(44,36,22,0.06);
+    --shadow-md: 0 4px 16px rgba(44,36,22,0.12), 0 1px 4px rgba(44,36,22,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    display: flex;
+    min-height: 100vh;
+    font-size: 14px;
+  }
+
+  /* ══════════════════════════════════════
+     SIDEBAR
+  ══════════════════════════════════════ */
+  .sidebar {
+    width: 252px;
+    min-width: 252px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 100;
+  }
+
+  .sidebar-logo {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-mark {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .logo-hex {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .logo-hex svg { width: 20px; height: 20px; }
+
+  .logo-name {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.3px;
+  }
+
+  .logo-sub {
+    font-size: 11px;
+    color: var(--ink3);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .admin-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-bg);
+    border: 1px solid #B8D4BE;
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .admin-chip::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  .sidebar-nav {
+    padding: 16px 12px;
+    flex: 1;
+  }
+
+  .nav-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--ink3);
+    padding: 8px 8px 6px;
+    margin-bottom: 2px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--ink2);
+    font-size: 13.5px;
+    font-weight: 400;
+    transition: all 0.15s;
+    margin-bottom: 1px;
+    text-decoration: none;
+    position: relative;
+  }
+
+  .nav-item:hover {
+    background: var(--bg2);
+    color: var(--ink);
+  }
+
+  .nav-item.active {
+    background: var(--accent-bg);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 3px; height: 20px;
+    background: var(--accent);
+    border-radius: 0 3px 3px 0;
+  }
+
+  .nav-icon {
+    width: 18px; height: 18px;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  .nav-item.active .nav-icon { opacity: 1; }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--red);
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  .nav-separator {
+    height: 1px;
+    background: var(--border);
+    margin: 10px 0;
+  }
+
+  .sidebar-footer {
+    padding: 16px 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .user-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .user-card:hover { background: var(--bg2); }
+
+  .user-avatar {
+    width: 34px; height: 34px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .user-role { font-size: 11px; color: var(--ink3); }
+
+  /* ══════════════════════════════════════
+     MAIN CONTENT
+  ══════════════════════════════════════ */
+  .main {
+    margin-left: 252px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .topbar-title {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ink);
+    flex: 1;
+  }
+
+  .topbar-breadcrumb {
+    font-size: 12px;
+    color: var(--ink3);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+
+  .btn-primary:hover { background: var(--accent-l); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink2);
+    border: 1px solid var(--border2);
+  }
+
+  .btn-ghost:hover { background: var(--bg2); color: var(--ink); }
+
+  .btn-danger {
+    background: var(--red-bg);
+    color: var(--red);
+    border: 1px solid #E0B8B8;
+  }
+
+  .btn-danger:hover { background: #EDD8D8; }
+
+  .icon-btn {
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 7px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--ink2);
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  .icon-btn:hover { background: var(--bg2); color: var(--ink); }
+
+  .icon-btn .notif-dot {
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 7px; height: 7px;
+    background: var(--red);
+    border-radius: 50%;
+    border: 1.5px solid var(--surface);
+  }
+
+  .content {
+    padding: 28px;
+    flex: 1;
+  }
+
+  /* ══════════════════════════════════════
+     PAGES
+  ══════════════════════════════════════ */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ══════════════════════════════════════
+     DASHBOARD PAGE
+  ══════════════════════════════════════ */
+  .page-header {
+    margin-bottom: 24px;
+  }
+
+  .page-header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .page-header p {
+    font-size: 13px;
+    color: var(--ink3);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .stat-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--ink3);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-delta {
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .delta-up { color: var(--accent); }
+  .delta-down { color: var(--red); }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .grid-3-1 {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 16px 20px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title {
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .card-subtitle {
+    font-size: 11px;
+    color: var(--ink3);
+    margin-top: 1px;
+  }
+
+  .card-body { padding: 16px 20px; }
+
+  /* Access log table */
+  .log-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .log-table th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 0 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .log-table td {
+    padding: 11px 0;
+    font-size: 13px;
+    color: var(--ink2);
+    border-bottom: 1px solid var(--bg3);
+    vertical-align: middle;
+  }
+
+  .log-table tr:last-child td { border-bottom: none; }
+
+  .log-table td:first-child, .log-table th:first-child { padding-left: 0; }
+
+  .user-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .user-mini-avatar {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .avatar-student { background: var(--accent-bg); color: var(--accent); }
+  .avatar-visitor { background: var(--blue-bg); color: var(--blue); }
+  .avatar-provider { background: var(--amber-bg); color: var(--amber); }
+
+  .user-full-name { font-weight: 500; color: var(--ink); font-size: 13px; }
+  .user-id { font-size: 11px; color: var(--ink3); }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .badge-green { background: var(--accent-bg); color: var(--accent); }
+  .badge-red { background: var(--red-bg); color: var(--red); }
+  .badge-amber { background: var(--amber-bg); color: var(--amber); }
+  .badge-blue { background: var(--blue-bg); color: var(--blue); }
+  .badge-gray { background: var(--bg3); color: var(--ink3); }
+
+  .badge::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .method-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    background: var(--bg2);
+    color: var(--ink2);
+    border: 1px solid var(--border);
+    font-weight: 500;
+  }
+
+  /* Chart placeholder */
+  .chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 120px;
+    padding: 4px 0;
+  }
+
+  .chart-bar-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    height: 100%;
+    justify-content: flex-end;
+  }
+
+  .chart-bar {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    background: var(--accent);
+    opacity: 0.8;
+    transition: opacity 0.2s;
+    cursor: pointer;
+    min-height: 4px;
+  }
+
+  .chart-bar:hover { opacity: 1; }
+  .chart-bar.today { opacity: 1; background: var(--accent-l); }
+
+  .chart-bar-label {
+    font-size: 10px;
+    color: var(--ink3);
+  }
+
+  /* Donut chart */
+  .donut-wrap {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 8px 0;
+  }
+
+  .donut-svg { flex-shrink: 0; }
+
+  .donut-legend {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--ink2);
+  }
+
+  .legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .legend-val {
+    margin-left: auto;
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Access points widget */
+  .point-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--bg3);
+  }
+
+  .point-item:last-child { border-bottom: none; }
+
+  .point-indicator {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .point-active { background: var(--accent); }
+  .point-inactive { background: var(--ink3); }
+
+  .point-name { font-size: 13px; font-weight: 500; flex: 1; }
+  .point-count { font-size: 12px; color: var(--ink3); }
+
+  /* Alerts */
+  .alert-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--bg3);
+  }
+
+  .alert-item:last-child { border-bottom: none; }
+
+  .alert-icon-wrap {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .alert-body { flex: 1; }
+  .alert-msg { font-size: 13px; color: var(--ink); font-weight: 400; }
+  .alert-time { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+
+  /* ══════════════════════════════════════
+     USERS PAGE
+  ══════════════════════════════════════ */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .search-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0 12px;
+    flex: 1;
+    max-width: 340px;
+    transition: border-color 0.15s;
+  }
+
+  .search-field:focus-within { border-color: var(--accent); }
+
+  .search-field input {
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    color: var(--ink);
+    padding: 8px 0;
+    font-family: 'DM Sans', sans-serif;
+    width: 100%;
+    outline: none;
+  }
+
+  .search-field input::placeholder { color: var(--ink3); }
+
+  .filter-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--ink2);
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .filter-select:focus { border-color: var(--accent); }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .data-table thead tr {
+    background: var(--bg2);
+  }
+
+  .data-table th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .data-table td {
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--ink2);
+    border-bottom: 1px solid var(--bg3);
+    vertical-align: middle;
+  }
+
+  .data-table tbody tr {
+    transition: background 0.1s;
+    cursor: pointer;
+  }
+
+  .data-table tbody tr:hover { background: var(--bg2); }
+  .data-table tbody tr:last-child td { border-bottom: none; }
+
+  .action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--ink2);
+    transition: all 0.15s;
+  }
+
+  .action-btn:hover { background: var(--bg2); color: var(--ink); }
+  .action-btn.danger:hover { background: var(--red-bg); color: var(--red); border-color: #E0B8B8; }
+
+  .table-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  /* ══════════════════════════════════════
+     ACCESS POINTS PAGE
+  ══════════════════════════════════════ */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .access-point-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .access-point-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+
+  .access-point-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+  }
+
+  .access-point-card.inactive::before { background: var(--ink3); }
+
+  .apc-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .apc-name {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+
+  .apc-location {
+    font-size: 12px;
+    color: var(--ink3);
+  }
+
+  .apc-stats {
+    display: flex;
+    gap: 16px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .apc-stat { flex: 1; }
+  .apc-stat-val {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .apc-stat-label { font-size: 11px; color: var(--ink3); }
+
+  /* Motivos de ingreso */
+  .motivos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .motivo-chip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .motivo-chip:hover { background: var(--bg2); }
+
+  .motivo-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .motivo-count { font-size: 12px; color: var(--ink3); }
+
+  /* ══════════════════════════════════════
+     REPORTES PAGE
+  ══════════════════════════════════════ */
+  .report-tabs {
+    display: flex;
+    gap: 2px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 3px;
+    margin-bottom: 20px;
+    width: fit-content;
+  }
+
+  .rtab {
+    padding: 7px 16px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--ink3);
+    transition: all 0.15s;
+  }
+
+  .rtab.active {
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: 0 1px 3px rgba(44,36,22,0.1);
+  }
+
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+  }
+
+  .filter-group label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--ink3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .filter-group input, .filter-group select {
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .filter-divider {
+    width: 1px;
+    height: 36px;
+    background: var(--border);
+  }
+
+  .export-group {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+  }
+
+  .btn-export {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 7px;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink2);
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .btn-export:hover { background: var(--bg2); color: var(--ink); }
+
+  .report-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .rsummary-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+
+  .rsummary-val {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 3px;
+  }
+
+  .rsummary-label { font-size: 12px; color: var(--ink3); }
+
+  /* ══════════════════════════════════════
+     MODAL
+  ══════════════════════════════════════ */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(44,36,22,0.4);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    width: 480px;
+    max-width: 90vw;
+    box-shadow: 0 20px 60px rgba(44,36,22,0.2);
+    animation: modalIn 0.2s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .modal-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-title {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .modal-close {
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--ink3);
+    transition: all 0.15s;
+    border: none;
+    background: none;
+    font-size: 18px;
+  }
+
+  .modal-close:hover { background: var(--bg2); color: var(--ink); }
+
+  .modal-body { padding: 20px 24px; }
+
+  .modal-footer {
+    padding: 14px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink2);
+    margin-bottom: 6px;
+    letter-spacing: 0.3px;
+  }
+
+  .form-input, .form-select {
+    width: 100%;
+    padding: 9px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    font-size: 13.5px;
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .form-input:focus, .form-select:focus { border-color: var(--accent); }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* ══════════════════════════════════════
+     TOAST
+  ══════════════════════════════════════ */
+  .toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .toast {
+    background: var(--ink);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(44,36,22,0.25);
+    animation: toastIn 0.25s ease;
+  }
+
+  .toast.success { background: var(--accent); }
+  .toast.error { background: var(--red); }
+
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ══════════════════════════════════════
+     EMPTY STATES
+  ══════════════════════════════════════ */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink3);
+  }
+
+  .empty-icon {
+    width: 48px; height: 48px;
+    margin: 0 auto 12px;
+    opacity: 0.4;
+  }
+
+  .empty-state h3 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink2);
+    margin-bottom: 4px;
+  }
+
+  .empty-state p { font-size: 13px; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--ink3); }
+
+  .tag { 
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    background: var(--bg3);
+    color: var(--ink2);
+    border: 1px solid var(--border);
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  /* Active tab indicator */
+  .report-content { display: none; }
+  .report-content.active { display: block; }
+
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--ink3);
+  }
+
+  .pagination-pages {
+    display: flex;
+    gap: 4px;
+  }
+
+  .pg-btn {
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--ink2);
+    transition: all 0.15s;
+  }
+
+  .pg-btn:hover { background: var(--bg2); }
+  .pg-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-hex">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo-name">UniAccess</div>
+        <div class="logo-sub">Control de Acceso</div>
+      </div>
+    </div>
+    <div class="admin-chip">Administrador TICS</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Principal</div>
+
+    <a class="nav-item active" onclick="showPage('dashboard', this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+
+    <div class="nav-section-label" style="margin-top:10px">Gestión</div>
+
+    <a class="nav-item" onclick="showPage('usuarios', this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Gestión de Usuarios
+    </a>
+
+    <a class="nav-item" onclick="showPage('accesos', this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Entorno de Acceso
+    </a>
+
+    <a class="nav-item" onclick="showPage('reportes', this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Reportes de Acceso
+      <span class="nav-badge">3</span>
+    </a>
+
+    <div class="nav-separator"></div>
+
+    <a class="nav-item" onclick="showPage('registros', this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Registros de Ingreso
+    </a>
+
+    <a class="nav-item" onclick="showPage('config', this)">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M20 12h2M2 12H4M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41"/></svg>
+      Configuración
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="user-avatar">AT</div>
+      <div class="user-info">
+        <div class="user-name">Admin TICS</div>
+        <div class="user-role">admin@universidad.edu.ec</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink3)"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════
+     MAIN
+════════════════════════════════════════════════ -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="topbar-breadcrumb" id="topbar-bc">
+      <span>UniAccess</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      <span>Dashboard</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn" title="Notificaciones">
+        <div class="notif-dot"></div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </button>
+      <button class="icon-btn" title="Actualizar">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.55"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ═══════ DASHBOARD ═══════ -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <h1>Bienvenido, Administrador</h1>
+        <p>Resumen del sistema — Miércoles 25 de febrero de 2026</p>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-label">Ingresos Hoy</div>
+            <div class="stat-icon" style="background:var(--accent-bg)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.44 16.92z"/></svg>
+            </div>
+          </div>
+          <div class="stat-value">284</div>
+          <div class="stat-delta delta-up">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            +12% vs ayer
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-label">Accesos Denegados</div>
+            <div class="stat-icon" style="background:var(--red-bg)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            </div>
+          </div>
+          <div class="stat-value" style="color:var(--red)">7</div>
+          <div class="stat-delta delta-down">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+            -3 vs ayer
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-label">Usuarios Activos</div>
+            <div class="stat-icon" style="background:var(--blue-bg)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+          </div>
+          <div class="stat-value">1,432</div>
+          <div class="stat-delta" style="color:var(--ink3)">Total registrados</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-label">Puntos de Acceso</div>
+            <div class="stat-icon" style="background:var(--amber-bg)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            </div>
+          </div>
+          <div class="stat-value">6</div>
+          <div class="stat-delta delta-up">5 activos · 1 inactivo</div>
+        </div>
+      </div>
+
+      <!-- Charts row -->
+      <div class="grid-3-1">
+        <!-- Ingresos por hora -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Ingresos por hora — Hoy</div>
+              <div class="card-subtitle">Todos los puntos de acceso</div>
+            </div>
+            <div class="badge badge-green">EN VIVO</div>
+          </div>
+          <div class="card-body">
+            <div class="chart-bars">
+              <div class="chart-bar-wrap"><div class="chart-bar" style="height:18%"></div><span class="chart-bar-label">6h</span></div>
+              <div class="chart-bar-wrap"><div class="chart-bar" style="height:30%"></div><span class="chart-bar-label">7h</span></div>
+              <div class="chart-bar-wrap"><div class="chart-bar" style="height:65%"></div><span class="chart-bar-label">8h</span></div>
+              <div class="chart-bar-wrap"><div class="chart-bar" style="height:88%"></div><span class="chart-bar-label">9h</span></div>
+              <div class="chart-bar-wrap"><div class="chart-bar" style="height:72%"></div><span class="chart-bar-label">10h</span></div>
+              <div class="chart-bar-wrap"><div class="chart-bar" style="height:55%"></div><span class="chart-bar-label">11h</span></div>
+              <div class="chart-bar-wrap"><div class="chart-bar" style="height:40%"></div><span class="chart-bar-label">12h</span></div>
+              <div class="chart-bar-wrap"><div class="chart-bar today" style="height:48%"></div><span class="chart-bar-label">13h</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Distribución por tipo -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Por tipo de usuario</div>
+              <div class="card-subtitle">Hoy</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="donut-wrap">
+              <svg class="donut-svg" width="80" height="80" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="28" fill="none" stroke="var(--bg3)" stroke-width="14"/>
+                <!-- Estudiantes 68% -->
+                <circle cx="40" cy="40" r="28" fill="none" stroke="var(--accent)" stroke-width="14"
+                  stroke-dasharray="119.4 56.1" stroke-dashoffset="43.98" transform="rotate(-90 40 40)"/>
+                <!-- Visitantes 20% -->
+                <circle cx="40" cy="40" r="28" fill="none" stroke="var(--blue)" stroke-width="14"
+                  stroke-dasharray="35.1 140.4" stroke-dashoffset="-75.4" transform="rotate(-90 40 40)"/>
+                <!-- Proveedores 12% -->
+                <circle cx="40" cy="40" r="28" fill="none" stroke="var(--amber)" stroke-width="14"
+                  stroke-dasharray="21.1 154.4" stroke-dashoffset="-110.5" transform="rotate(-90 40 40)"/>
+                <text x="40" y="38" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink)" font-family="Fraunces">284</text>
+                <text x="40" y="50" text-anchor="middle" font-size="8" fill="var(--ink3)" font-family="DM Sans">total</text>
+              </svg>
+              <div class="donut-legend">
+                <div class="legend-item">
+                  <div class="legend-dot" style="background:var(--accent)"></div>
+                  Estudiantes
+                  <span class="legend-val">193</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-dot" style="background:var(--blue)"></div>
+                  Visitantes
+                  <span class="legend-val">57</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-dot" style="background:var(--amber)"></div>
+                  Proveedores
+                  <span class="legend-val">34</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lower row -->
+      <div class="grid-2">
+        <!-- Últimos ingresos -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Últimos registros de acceso</div>
+              <div class="card-subtitle">Tiempo real</div>
+            </div>
+            <button class="btn btn-ghost" style="font-size:12px;padding:5px 10px" onclick="showPage('registros', document.querySelector('[onclick*=registros]'))">Ver todos</button>
+          </div>
+          <div class="card-body" style="padding-top:10px">
+            <table class="log-table">
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Tipo</th>
+                  <th>Método</th>
+                  <th>Resultado</th>
+                  <th>Hora</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="user-cell"><div class="user-mini-avatar avatar-student">CE</div><div><div class="user-full-name">Carlos Espinoza</div><div class="user-id">EST-2024-0341</div></div></div></td>
+                  <td><span class="tag">Estudiante</span></td>
+                  <td><span class="method-tag">QR</span></td>
+                  <td><span class="badge badge-green">Autorizado</span></td>
+                  <td style="color:var(--ink3)">13:47</td>
+                </tr>
+                <tr>
+                  <td><div class="user-cell"><div class="user-mini-avatar avatar-visitor">MR</div><div><div class="user-full-name">María Rodríguez</div><div class="user-id">VIS-2026-0018</div></div></div></td>
+                  <td><span class="tag">Visitante</span></td>
+                  <td><span class="method-tag">QR</span></td>
+                  <td><span class="badge badge-green">Autorizado</span></td>
+                  <td style="color:var(--ink3)">13:45</td>
+                </tr>
+                <tr>
+                  <td><div class="user-cell"><div class="user-mini-avatar avatar-provider">TP</div><div><div class="user-full-name">TechPrint S.A.</div><div class="user-id">PRV-2026-0005</div></div></div></td>
+                  <td><span class="tag">Proveedor</span></td>
+                  <td><span class="method-tag">QR</span></td>
+                  <td><span class="badge badge-green">Autorizado</span></td>
+                  <td style="color:var(--ink3)">13:40</td>
+                </tr>
+                <tr>
+                  <td><div class="user-cell"><div class="user-mini-avatar" style="background:#fde8e8;color:#8b2020">??</div><div><div class="user-full-name">Desconocido</div><div class="user-id">Sin registro</div></div></div></td>
+                  <td><span class="tag">—</span></td>
+                  <td><span class="method-tag">QR</span></td>
+                  <td><span class="badge badge-red">Denegado</span></td>
+                  <td style="color:var(--ink3)">13:38</td>
+                </tr>
+                <tr>
+                  <td><div class="user-cell"><div class="user-mini-avatar avatar-student">LM</div><div><div class="user-full-name">Luis Morales</div><div class="user-id">EST-2024-0128</div></div></div></td>
+                  <td><span class="tag">Estudiante</span></td>
+                  <td><span class="method-tag">Biometría</span></td>
+                  <td><span class="badge badge-green">Autorizado</span></td>
+                  <td style="color:var(--ink3)">13:35</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Panel derecho: Puntos + Alertas -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Puntos de Acceso</div>
+              <span class="badge badge-green">5 activos</span>
+            </div>
+            <div class="card-body" style="padding-top:8px">
+              <div class="point-item">
+                <div class="point-indicator point-active"></div>
+                <span class="point-name">Entrada Principal Norte</span>
+                <span class="point-count">128 hoy</span>
+              </div>
+              <div class="point-item">
+                <div class="point-indicator point-active"></div>
+                <span class="point-name">Entrada Sur — Biblioteca</span>
+                <span class="point-count">74 hoy</span>
+              </div>
+              <div class="point-item">
+                <div class="point-indicator point-active"></div>
+                <span class="point-name">Acceso Edificio Ciencias</span>
+                <span class="point-count">42 hoy</span>
+              </div>
+              <div class="point-item">
+                <div class="point-indicator point-active"></div>
+                <span class="point-name">Estacionamiento Proveedores</span>
+                <span class="point-count">27 hoy</span>
+              </div>
+              <div class="point-item">
+                <div class="point-indicator point-inactive"></div>
+                <span class="point-name" style="color:var(--ink3)">Acceso Auditorio</span>
+                <span class="badge badge-gray" style="font-size:10px">Inactivo</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Alertas Recientes</div>
+              <span class="badge badge-red">2 nuevas</span>
+            </div>
+            <div class="card-body" style="padding-top:8px">
+              <div class="alert-item">
+                <div class="alert-icon-wrap" style="background:var(--red-bg)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <div class="alert-body">
+                  <div class="alert-msg">3 intentos fallidos — Entrada Principal</div>
+                  <div class="alert-time">hace 8 minutos</div>
+                </div>
+              </div>
+              <div class="alert-item">
+                <div class="alert-icon-wrap" style="background:var(--amber-bg)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <div class="alert-body">
+                  <div class="alert-msg">QR expirado — visitante EST-098</div>
+                  <div class="alert-time">hace 22 minutos</div>
+                </div>
+              </div>
+              <div class="alert-item">
+                <div class="alert-icon-wrap" style="background:var(--accent-bg)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div class="alert-body">
+                  <div class="alert-msg">Sincronización con SGA completada</div>
+                  <div class="alert-time">hace 1 hora</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ GESTIÓN DE USUARIOS ═══════ -->
+    <div class="page" id="page-usuarios">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between">
+        <div>
+          <h1>Gestión de Usuarios</h1>
+          <p>Crear, modificar y gestionar cuentas — CU-02 (RF-13, RF-14, RF-12)</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-new-user')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nueva Cuenta
+        </button>
+      </div>
+
+      <!-- Sub-tabs -->
+      <div class="report-tabs" style="margin-bottom:20px">
+        <div class="rtab active" onclick="switchSubTab(this, 'utab-cuentas')">Cuentas del Sistema</div>
+        <div class="rtab" onclick="switchSubTab(this, 'utab-estado')">Estado Usuarios/Visitantes</div>
+      </div>
+
+      <!-- Cuentas del Sistema -->
+      <div id="utab-cuentas" class="report-content active">
+        <div class="toolbar">
+          <div class="search-field">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Buscar por nombre, cédula o correo…">
+          </div>
+          <select class="filter-select">
+            <option>Todos los roles</option>
+            <option>Administrador TICS</option>
+            <option>Guardia de Seguridad</option>
+          </select>
+          <select class="filter-select">
+            <option>Todos los estados</option>
+            <option>Activo</option>
+            <option>Bloqueado</option>
+            <option>Desactivado</option>
+          </select>
+        </div>
+
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Rol</th>
+                <th>Correo</th>
+                <th>Estado</th>
+                <th>Último acceso</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="user-cell"><div class="user-mini-avatar" style="background:#e8f0ea;color:#2d5a3d;font-size:12px">AT</div><div><div class="user-full-name">Admin TICS</div><div class="user-id">adm.tics@univ.edu.ec</div></div></div></td>
+                <td><span class="badge badge-green" style="font-size:11px">Administrador TICS</span></td>
+                <td style="color:var(--ink3)">adm.tics@univ.edu.ec</td>
+                <td><span class="badge badge-green">Activo</span></td>
+                <td style="color:var(--ink3)">Ahora</td>
+                <td><div class="table-actions">
+                  <button class="action-btn" title="Editar" onclick="openModal('modal-edit-user')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                </div></td>
+              </tr>
+              <tr>
+                <td><div class="user-cell"><div class="user-mini-avatar" style="background:#e8eef5;color:#1a3a5c;font-size:12px">JP</div><div><div class="user-full-name">Jorge Pacheco</div><div class="user-id">guardia.n1@univ.edu.ec</div></div></div></td>
+                <td><span class="badge badge-blue" style="font-size:11px">Guardia de Seguridad</span></td>
+                <td style="color:var(--ink3)">guardia.n1@univ.edu.ec</td>
+                <td><span class="badge badge-green">Activo</span></td>
+                <td style="color:var(--ink3)">Hace 2h</td>
+                <td><div class="table-actions">
+                  <button class="action-btn" title="Editar" onclick="openModal('modal-edit-user')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                  <button class="action-btn danger" title="Bloquear" onclick="showToast('Usuario bloqueado', 'success')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></button>
+                </div></td>
+              </tr>
+              <tr>
+                <td><div class="user-cell"><div class="user-mini-avatar" style="background:#e8eef5;color:#1a3a5c;font-size:12px">AM</div><div><div class="user-full-name">Ana Mora</div><div class="user-id">guardia.s1@univ.edu.ec</div></div></div></td>
+                <td><span class="badge badge-blue" style="font-size:11px">Guardia de Seguridad</span></td>
+                <td style="color:var(--ink3)">guardia.s1@univ.edu.ec</td>
+                <td><span class="badge badge-amber">Bloqueado</span></td>
+                <td style="color:var(--ink3)">Hace 3 días</td>
+                <td><div class="table-actions">
+                  <button class="action-btn" title="Editar" onclick="openModal('modal-edit-user')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                  <button class="action-btn" title="Reactivar" onclick="showToast('Usuario reactivado', 'success')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.55"/></svg></button>
+                </div></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="pagination">
+            <span>Mostrando 3 de 3 cuentas del sistema</span>
+            <div class="pagination-pages">
+              <button class="pg-btn active">1</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estado Usuarios/Visitantes -->
+      <div id="utab-estado" class="report-content">
+        <div class="toolbar">
+          <div class="search-field">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Buscar visitante, estudiante o proveedor…">
+          </div>
+          <select class="filter-select">
+            <option>Todos los tipos</option>
+            <option>Estudiante</option>
+            <option>Visitante</option>
+            <option>Proveedor</option>
+          </select>
+          <select class="filter-select">
+            <option>Todos los estados</option>
+            <option>Activo</option>
+            <option>Bloqueado</option>
+            <option>Desactivado</option>
+          </select>
+        </div>
+
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Persona</th>
+                <th>Tipo</th>
+                <th>Cédula</th>
+                <th>Estado</th>
+                <th>QR/Biometría</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="user-cell"><div class="user-mini-avatar avatar-student">CE</div><div><div class="user-full-name">Carlos Espinoza</div><div class="user-id">Ingeniería en Sistemas</div></div></div></td>
+                <td><span class="tag">Estudiante</span></td>
+                <td style="color:var(--ink3)">1750123456</td>
+                <td><span class="badge badge-green">Activo</span></td>
+                <td><span class="badge badge-green">QR · Bio</span></td>
+                <td><div class="table-actions">
+                  <button class="action-btn danger" title="Bloquear ingreso" onclick="showToast('Ingreso bloqueado', 'success')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>
+                </div></td>
+              </tr>
+              <tr>
+                <td><div class="user-cell"><div class="user-mini-avatar avatar-visitor">MR</div><div><div class="user-full-name">María Rodríguez</div><div class="user-id">Visita académica</div></div></div></td>
+                <td><span class="tag">Visitante</span></td>
+                <td style="color:var(--ink3)">1712345678</td>
+                <td><span class="badge badge-green">Activo</span></td>
+                <td><span class="badge badge-green">QR temporal</span></td>
+                <td><div class="table-actions">
+                  <button class="action-btn danger" title="Bloquear ingreso" onclick="showToast('Ingreso bloqueado', 'success')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>
+                </div></td>
+              </tr>
+              <tr>
+                <td><div class="user-cell"><div class="user-mini-avatar avatar-provider">TP</div><div><div class="user-full-name">TechPrint S.A.</div><div class="user-id">Proveedor recurrente</div></div></div></td>
+                <td><span class="tag">Proveedor</span></td>
+                <td style="color:var(--ink3)">RUC 1790123456</td>
+                <td><span class="badge badge-green">Activo</span></td>
+                <td><span class="badge badge-amber">Expira 01/03</span></td>
+                <td><div class="table-actions">
+                  <button class="action-btn danger" title="Desactivar cuenta" onclick="showToast('Cuenta desactivada', 'success')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></button>
+                </div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ ENTORNO DE ACCESO ═══════ -->
+    <div class="page" id="page-accesos">
+      <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between">
+        <div>
+          <h1>Gestión del Entorno de Acceso</h1>
+          <p>Puntos de acceso y motivos de ingreso — CU-04 (RF-16)</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-new-point')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nuevo Punto
+        </button>
+      </div>
+
+      <div class="report-tabs" style="margin-bottom:20px">
+        <div class="rtab active" onclick="switchSubTab(this, 'atab-puntos')">Puntos de Acceso</div>
+        <div class="rtab" onclick="switchSubTab(this, 'atab-motivos')">Motivos de Ingreso</div>
+      </div>
+
+      <div id="atab-puntos" class="report-content active">
+        <div class="cards-grid">
+          <div class="access-point-card">
+            <div class="apc-header">
+              <div>
+                <div class="apc-name">Entrada Principal Norte</div>
+                <div class="apc-location">📍 Bloque A — Frente Av. Principal</div>
+              </div>
+              <span class="badge badge-green">Activo</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <span class="method-tag">QR</span>
+              <span class="method-tag">Biometría</span>
+              <span class="method-tag">Manual</span>
+            </div>
+            <div class="apc-stats">
+              <div class="apc-stat"><div class="apc-stat-val">128</div><div class="apc-stat-label">Hoy</div></div>
+              <div class="apc-stat"><div class="apc-stat-val">4,231</div><div class="apc-stat-label">Este mes</div></div>
+              <div class="apc-stat"><div class="apc-stat-val">3</div><div class="apc-stat-label">Denegados hoy</div></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="btn btn-ghost" style="flex:1;font-size:12px;padding:6px 8px" onclick="openModal('modal-edit-point')">Editar</button>
+              <button class="action-btn danger" onclick="showToast('Punto desactivado', 'success')" style="width:30px;height:30px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+            </div>
+          </div>
+
+          <div class="access-point-card">
+            <div class="apc-header">
+              <div>
+                <div class="apc-name">Entrada Sur — Biblioteca</div>
+                <div class="apc-location">📍 Bloque C — Lado Biblioteca</div>
+              </div>
+              <span class="badge badge-green">Activo</span>
+            </div>
+            <div style="display:flex;gap:8px">
+              <span class="method-tag">QR</span>
+              <span class="method-tag">Biometría</span>
+            </div>
+            <div class="apc-stats">
+              <div class="apc-stat"><div class="apc-stat-val">74</div><div class="apc-stat-label">Hoy</div></div>
+              <div class="apc-stat"><div class="apc-stat-val">2,108</div><div class="apc-stat-label">Este mes</div></div>
+              <div class="apc-stat"><div class="apc-stat-val">2</div><div class="apc-stat-label">Denegados hoy</div></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="btn btn-ghost" style="flex:1;font-size:12px;padding:6px 8px" onclick="openModal('modal-edit-point')">Editar</button>
+              <button class="action-btn danger" onclick="showToast('Punto desactivado', 'success')" style="width:30px;height:30px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+            </div>
+          </div>
+
+          <div class="access-point-card inactive">
+            <div class="apc-header">
+              <div>
+                <div class="apc-name" style="color:var(--ink3)">Acceso Auditorio</div>
+                <div class="apc-location">📍 Bloque D — Auditorio Central</div>
+              </div>
+              <span class="badge badge-gray">Inactivo</span>
+            </div>
+            <div style="display:flex;gap:8px">
+              <span class="method-tag">QR</span>
+            </div>
+            <div class="apc-stats">
+              <div class="apc-stat"><div class="apc-stat-val" style="color:var(--ink3)">0</div><div class="apc-stat-label">Hoy</div></div>
+              <div class="apc-stat"><div class="apc-stat-val" style="color:var(--ink3)">0</div><div class="apc-stat-label">Este mes</div></div>
+              <div class="apc-stat"><div class="apc-stat-val" style="color:var(--ink3)">—</div><div class="apc-stat-label">—</div></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="btn btn-ghost" style="flex:1;font-size:12px;padding:6px 8px" onclick="showToast('Punto activado', 'success')">Activar</button>
+              <button class="action-btn danger" onclick="showToast('Punto eliminado', 'success')" style="width:30px;height:30px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="atab-motivos" class="report-content">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+          <button class="btn btn-primary" onclick="openModal('modal-new-motivo')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Añadir Motivo
+          </button>
+        </div>
+        <div class="motivos-grid">
+          <div class="motivo-chip">
+            <div>
+              <div class="motivo-name">Visita académica</div>
+              <div class="motivo-count">Usado 142 veces este mes</div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="action-btn" onclick="openModal('modal-new-motivo')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="action-btn danger" onclick="showToast('Motivo eliminado', 'success')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+            </div>
+          </div>
+          <div class="motivo-chip">
+            <div>
+              <div class="motivo-name">Entrega de mercancía</div>
+              <div class="motivo-count">Usado 89 veces este mes</div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="action-btn" onclick="openModal('modal-new-motivo')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="action-btn danger" onclick="showToast('Motivo eliminado', 'success')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+            </div>
+          </div>
+          <div class="motivo-chip">
+            <div>
+              <div class="motivo-name">Mantenimiento</div>
+              <div class="motivo-count">Usado 34 veces este mes</div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="action-btn" onclick="openModal('modal-new-motivo')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="action-btn danger" onclick="showToast('Motivo eliminado', 'success')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+            </div>
+          </div>
+          <div class="motivo-chip">
+            <div>
+              <div class="motivo-name">Reunión institucional</div>
+              <div class="motivo-count">Usado 57 veces este mes</div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="action-btn" onclick="openModal('modal-new-motivo')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="action-btn danger" onclick="showToast('Motivo eliminado', 'success')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+            </div>
+          </div>
+          <div class="motivo-chip">
+            <div>
+              <div class="motivo-name">Evento especial</div>
+              <div class="motivo-count">Usado 21 veces este mes</div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="action-btn" onclick="openModal('modal-new-motivo')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="action-btn danger" onclick="showToast('Motivo eliminado', 'success')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+            </div>
+          </div>
+          <div class="motivo-chip">
+            <div>
+              <div class="motivo-name">Consulta administrativa</div>
+              <div class="motivo-count">Usado 18 veces este mes</div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="action-btn" onclick="openModal('modal-new-motivo')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              <button class="action-btn danger" onclick="showToast('Motivo eliminado', 'success')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ REPORTES ═══════ -->
+    <div class="page" id="page-reportes">
+      <div class="page-header">
+        <h1>Reportes de Acceso</h1>
+        <p>Generar y exportar reportes filtrados — CU-03 (RF-18)</p>
+      </div>
+
+      <div class="report-tabs">
+        <div class="rtab active" onclick="switchSubTab(this, 'rtab-estudiantes')">Estudiantes</div>
+        <div class="rtab" onclick="switchSubTab(this, 'rtab-visitantes')">Visitantes</div>
+        <div class="rtab" onclick="switchSubTab(this, 'rtab-proveedores')">Proveedores</div>
+      </div>
+
+      <!-- Filter bar -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label>Fecha Inicio</label>
+          <input type="date" value="2026-02-01">
+        </div>
+        <div class="filter-divider"></div>
+        <div class="filter-group">
+          <label>Fecha Fin</label>
+          <input type="date" value="2026-02-25">
+        </div>
+        <div class="filter-divider"></div>
+        <div class="filter-group">
+          <label>Método de validación</label>
+          <select>
+            <option>Todos</option>
+            <option>QR</option>
+            <option>Biometría</option>
+          </select>
+        </div>
+        <div class="filter-divider"></div>
+        <div class="filter-group">
+          <label>Resultado</label>
+          <select>
+            <option>Todos</option>
+            <option>Autorizado</option>
+            <option>Denegado</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" style="margin-left:8px" onclick="showToast('Filtros aplicados correctamente', 'success')">
+          Aplicar
+        </button>
+        <div class="export-group">
+          <button class="btn-export" onclick="showToast('Exportando PDF…', 'success')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            PDF
+          </button>
+          <button class="btn-export" onclick="showToast('Exportando Excel…', 'success')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+            Excel
+          </button>
+        </div>
+      </div>
+
+      <!-- Summary cards -->
+      <div class="report-summary">
+        <div class="rsummary-card">
+          <div class="rsummary-val" style="color:var(--accent)">3,284</div>
+          <div class="rsummary-label">Total ingresos</div>
+        </div>
+        <div class="rsummary-card">
+          <div class="rsummary-val" style="color:var(--red)">48</div>
+          <div class="rsummary-label">Accesos denegados</div>
+        </div>
+        <div class="rsummary-card">
+          <div class="rsummary-val" style="color:var(--blue)">82%</div>
+          <div class="rsummary-label">Mediante QR</div>
+        </div>
+        <div class="rsummary-card">
+          <div class="rsummary-val" style="color:var(--amber)">18%</div>
+          <div class="rsummary-label">Mediante Biometría</div>
+        </div>
+      </div>
+
+      <!-- Report tables -->
+      <div id="rtab-estudiantes" class="report-content active">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Reporte de Estudiantes</div>
+              <div class="card-subtitle">Feb 01 – Feb 25, 2026 · 3,284 registros encontrados</div>
+            </div>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Estudiante</th>
+                <th>Carrera</th>
+                <th>Punto de acceso</th>
+                <th>Método</th>
+                <th>Fecha y hora</th>
+                <th>Resultado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="user-cell"><div class="user-mini-avatar avatar-student">CE</div><div><div class="user-full-name">Carlos Espinoza</div><div class="user-id">EST-2024-0341</div></div></div></td>
+                <td style="color:var(--ink2)">Ing. Sistemas</td>
+                <td style="color:var(--ink2)">Entrada Principal Norte</td>
+                <td><span class="method-tag">QR</span></td>
+                <td style="color:var(--ink3)">25/02/2026 13:47</td>
+                <td><span class="badge badge-green">Autorizado</span></td>
+              </tr>
+              <tr>
+                <td><div class="user-cell"><div class="user-mini-avatar avatar-student">LM</div><div><div class="user-full-name">Luis Morales</div><div class="user-id">EST-2024-0128</div></div></div></td>
+                <td style="color:var(--ink2)">Ing. Civil</td>
+                <td style="color:var(--ink2)">Entrada Sur</td>
+                <td><span class="method-tag">Biometría</span></td>
+                <td style="color:var(--ink3)">25/02/2026 13:35</td>
+                <td><span class="badge badge-green">Autorizado</span></td>
+              </tr>
+              <tr>
+                <td><div class="user-cell"><div class="user-mini-avatar avatar-student">AP</div><div><div class="user-full-name">Ana Peralta</div><div class="user-id">EST-2023-0890</div></div></div></td>
+                <td style="color:var(--ink2)">Medicina</td>
+                <td style="color:var(--ink2)">Entrada Principal Norte</td>
+                <td><span class="method-tag">QR</span></td>
+                <td style="color:var(--ink3)">25/02/2026 08:12</td>
+                <td><span class="badge badge-red">Denegado</span></td>
+              </tr>
+              <tr>
+                <td><div class="user-cell"><div class="user-mini-avatar avatar-student">RV</div><div><div class="user-full-name">Roberto Vega</div><div class="user-id">EST-2025-0201</div></div></div></td>
+                <td style="color:var(--ink2)">Arquitectura</td>
+                <td style="color:var(--ink2)">Acceso Edificio Ciencias</td>
+                <td><span class="method-tag">QR</span></td>
+                <td style="color:var(--ink3)">24/02/2026 16:55</td>
+                <td><span class="badge badge-green">Autorizado</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="pagination">
+            <span>Mostrando 4 de 3,284 registros</span>
+            <div class="pagination-pages">
+              <button class="pg-btn active">1</button>
+              <button class="pg-btn">2</button>
+              <button class="pg-btn">3</button>
+              <button class="pg-btn">…</button>
+              <button class="pg-btn">82</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="rtab-visitantes" class="report-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Reporte de Visitantes</div>
+            <div class="card-subtitle" style="font-size:12px;color:var(--ink3);margin-top:2px">Feb 01 – Feb 25, 2026</div>
+          </div>
+          <div class="card-body">
+            <table class="data-table">
+              <thead><tr><th>Visitante</th><th>Cédula</th><th>Motivo</th><th>Punto de acceso</th><th>Fecha</th><th>Resultado</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><div class="user-cell"><div class="user-mini-avatar avatar-visitor">MR</div><div><div class="user-full-name">María Rodríguez</div><div class="user-id">VIS-2026-0018</div></div></div></td>
+                  <td style="color:var(--ink3)">1712345678</td>
+                  <td style="color:var(--ink2)">Visita académica</td>
+                  <td style="color:var(--ink2)">Entrada Principal</td>
+                  <td style="color:var(--ink3)">25/02/2026</td>
+                  <td><span class="badge badge-green">Autorizado</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="rtab-proveedores" class="report-content">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Reporte de Proveedores</div>
+            <div class="card-subtitle" style="font-size:12px;color:var(--ink3);margin-top:2px">Feb 01 – Feb 25, 2026</div>
+          </div>
+          <div class="card-body">
+            <table class="data-table">
+              <thead><tr><th>Proveedor</th><th>Empresa</th><th>Vehículo</th><th>Vigencia</th><th>Fecha acceso</th><th>Resultado</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><div class="user-cell"><div class="user-mini-avatar avatar-provider">TP</div><div><div class="user-full-name">Juan Torres</div><div class="user-id">PRV-2026-0005</div></div></div></td>
+                  <td style="color:var(--ink2)">TechPrint S.A.</td>
+                  <td style="color:var(--ink3)">ABC-1234</td>
+                  <td><span class="badge badge-amber">Expira 01/03</span></td>
+                  <td style="color:var(--ink3)">25/02/2026</td>
+                  <td><span class="badge badge-green">Autorizado</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ REGISTROS ═══════ -->
+    <div class="page" id="page-registros">
+      <div class="page-header">
+        <h1>Registros de Ingreso</h1>
+        <p>Historial completo de eventos de acceso — RF-04</p>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-field">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Buscar por nombre, cédula o punto de acceso…">
+        </div>
+        <select class="filter-select"><option>Todos los tipos</option><option>Estudiante</option><option>Visitante</option><option>Proveedor</option></select>
+        <select class="filter-select"><option>Todos los resultados</option><option>Autorizado</option><option>Denegado</option></select>
+        <select class="filter-select"><option>Todos los métodos</option><option>QR</option><option>Biometría</option></select>
+      </div>
+
+      <div class="card">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Tipo</th>
+              <th>Punto de acceso</th>
+              <th>Método</th>
+              <th>Resultado</th>
+              <th>Fecha y hora</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><div class="user-cell"><div class="user-mini-avatar avatar-student">CE</div><div><div class="user-full-name">Carlos Espinoza</div><div class="user-id">EST-2024-0341</div></div></div></td><td><span class="tag">Estudiante</span></td><td>Entrada Principal Norte</td><td><span class="method-tag">QR</span></td><td><span class="badge badge-green">Autorizado</span></td><td style="color:var(--ink3)">25/02/2026 13:47</td></tr>
+            <tr><td><div class="user-cell"><div class="user-mini-avatar avatar-visitor">MR</div><div><div class="user-full-name">María Rodríguez</div><div class="user-id">VIS-2026-0018</div></div></div></td><td><span class="tag">Visitante</span></td><td>Entrada Principal Norte</td><td><span class="method-tag">QR</span></td><td><span class="badge badge-green">Autorizado</span></td><td style="color:var(--ink3)">25/02/2026 13:45</td></tr>
+            <tr><td><div class="user-cell"><div class="user-mini-avatar avatar-provider">TP</div><div><div class="user-full-name">TechPrint S.A.</div><div class="user-id">PRV-2026-0005</div></div></div></td><td><span class="tag">Proveedor</span></td><td>Estacionamiento</td><td><span class="method-tag">QR</span></td><td><span class="badge badge-green">Autorizado</span></td><td style="color:var(--ink3)">25/02/2026 13:40</td></tr>
+            <tr><td><div class="user-cell"><div class="user-mini-avatar" style="background:#fde8e8;color:#8b2020">??</div><div><div class="user-full-name">Desconocido</div><div class="user-id">Sin registro</div></div></div></td><td><span class="tag">—</span></td><td>Entrada Principal Norte</td><td><span class="method-tag">QR</span></td><td><span class="badge badge-red">Denegado</span></td><td style="color:var(--ink3)">25/02/2026 13:38</td></tr>
+            <tr><td><div class="user-cell"><div class="user-mini-avatar avatar-student">LM</div><div><div class="user-full-name">Luis Morales</div><div class="user-id">EST-2024-0128</div></div></div></td><td><span class="tag">Estudiante</span></td><td>Entrada Sur — Biblioteca</td><td><span class="method-tag">Biometría</span></td><td><span class="badge badge-green">Autorizado</span></td><td style="color:var(--ink3)">25/02/2026 13:35</td></tr>
+            <tr><td><div class="user-cell"><div class="user-mini-avatar avatar-student">AP</div><div><div class="user-full-name">Ana Peralta</div><div class="user-id">EST-2023-0890</div></div></div></td><td><span class="tag">Estudiante</span></td><td>Entrada Principal Norte</td><td><span class="method-tag">QR</span></td><td><span class="badge badge-red">Denegado</span></td><td style="color:var(--ink3)">25/02/2026 08:12</td></tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span>Mostrando 6 de 3,284 registros totales</span>
+          <div class="pagination-pages">
+            <button class="pg-btn active">1</button>
+            <button class="pg-btn">2</button>
+            <button class="pg-btn">3</button>
+            <button class="pg-btn">…</button>
+            <button class="pg-btn">55</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ CONFIGURACIÓN ═══════ -->
+    <div class="page" id="page-config">
+      <div class="page-header">
+        <h1>Configuración del Sistema</h1>
+        <p>Parámetros generales y sincronización</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Sincronización con SGA</div></div>
+          <div class="card-body">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+              <div>
+                <div style="font-size:13px;font-weight:500;color:var(--ink)">Estado de sincronización</div>
+                <div style="font-size:12px;color:var(--ink3);margin-top:2px">Última sincronización hace 1 hora</div>
+              </div>
+              <span class="badge badge-green">Conectado</span>
+            </div>
+            <div style="background:var(--bg2);border-radius:8px;padding:12px;margin-bottom:16px;border:1px solid var(--border)">
+              <div style="font-size:11px;color:var(--ink3);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Última sincronización</div>
+              <div style="font-size:13px;color:var(--ink2)">1,432 usuarios actualizados · 0 errores</div>
+            </div>
+            <button class="btn btn-primary" onclick="showToast('Sincronizando con SGA…', 'success')" style="width:100%">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.55"/></svg>
+              Sincronizar ahora
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">Parámetros de Seguridad</div></div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Tiempo máximo de validación (segundos)</label>
+              <input class="form-input" type="number" value="3" min="1" max="10">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Intentos fallidos antes de alerta</label>
+              <input class="form-input" type="number" value="3" min="1" max="10">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Vigencia código QR visitante (horas)</label>
+              <input class="form-input" type="number" value="24" min="1" max="168">
+            </div>
+            <button class="btn btn-primary" onclick="showToast('Configuración guardada', 'success')" style="width:100%">Guardar cambios</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ═══════════════════════════════════════════════
+     MODALS
+════════════════════════════════════════════════ -->
+
+<!-- New User -->
+<div class="modal-overlay" id="modal-new-user">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Nueva cuenta de usuario</div>
+      <button class="modal-close" onclick="closeModal('modal-new-user')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Nombres</label><input class="form-input" type="text" placeholder="Ej: Juan Carlos"></div>
+        <div class="form-group"><label class="form-label">Apellidos</label><input class="form-input" type="text" placeholder="Ej: López Vera"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Correo institucional</label><input class="form-input" type="email" placeholder="usuario@universidad.edu.ec"></div>
+      <div class="form-group"><label class="form-label">Rol del sistema</label>
+        <select class="form-select">
+          <option>Administrador TICS</option>
+          <option>Guardia de Seguridad</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Contraseña temporal</label><input class="form-input" type="password" placeholder="Min. 8 caracteres"></div>
+        <div class="form-group"><label class="form-label">Confirmar contraseña</label><input class="form-input" type="password" placeholder="Repetir contraseña"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-new-user')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-new-user');showToast('Cuenta creada y roles asignados', 'success')">Crear cuenta</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit User -->
+<div class="modal-overlay" id="modal-edit-user">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Modificar cuenta de usuario</div>
+      <button class="modal-close" onclick="closeModal('modal-edit-user')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Nombres</label><input class="form-input" type="text" value="Jorge"></div>
+        <div class="form-group"><label class="form-label">Apellidos</label><input class="form-input" type="text" value="Pacheco"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Correo institucional</label><input class="form-input" type="email" value="guardia.n1@univ.edu.ec"></div>
+      <div class="form-group"><label class="form-label">Rol</label>
+        <select class="form-select"><option>Guardia de Seguridad</option><option>Administrador TICS</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Estado</label>
+        <select class="form-select"><option>Activo</option><option>Bloqueado</option><option>Desactivado</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-edit-user')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-edit-user');showToast('Cambios guardados correctamente', 'success')">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Access Point -->
+<div class="modal-overlay" id="modal-new-point">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Registrar punto de acceso</div>
+      <button class="modal-close" onclick="closeModal('modal-new-point')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Nombre del punto</label><input class="form-input" type="text" placeholder="Ej: Entrada Edificio Medicina"></div>
+      <div class="form-group"><label class="form-label">Ubicación</label><input class="form-input" type="text" placeholder="Ej: Bloque E — Av. Universitaria"></div>
+      <div class="form-group"><label class="form-label">Métodos habilitados</label>
+        <div style="display:flex;gap:16px;margin-top:4px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" checked> QR</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" checked> Biometría</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox"> Manual</label>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Estado inicial</label>
+        <select class="form-select"><option>Activo</option><option>Inactivo</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-new-point')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-new-point');showToast('Punto de acceso registrado', 'success')">Registrar punto</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Point -->
+<div class="modal-overlay" id="modal-edit-point">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Modificar punto de acceso</div>
+      <button class="modal-close" onclick="closeModal('modal-edit-point')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Nombre del punto</label><input class="form-input" type="text" value="Entrada Principal Norte"></div>
+      <div class="form-group"><label class="form-label">Ubicación</label><input class="form-input" type="text" value="Bloque A — Frente Av. Principal"></div>
+      <div class="form-group"><label class="form-label">Métodos habilitados</label>
+        <div style="display:flex;gap:16px;margin-top:4px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" checked> QR</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" checked> Biometría</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" checked> Manual</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-edit-point')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-edit-point');showToast('Punto de acceso actualizado', 'success')">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Motivo -->
+<div class="modal-overlay" id="modal-new-motivo">
+  <div class="modal" style="width:400px">
+    <div class="modal-header">
+      <div class="modal-title">Gestionar motivo de ingreso</div>
+      <button class="modal-close" onclick="closeModal('modal-new-motivo')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Nombre del motivo</label><input class="form-input" type="text" placeholder="Ej: Práctica de laboratorio"></div>
+      <div class="form-group"><label class="form-label">Descripción (opcional)</label><input class="form-input" type="text" placeholder="Breve descripción…"></div>
+      <div class="form-group"><label class="form-label">Aplica para</label>
+        <div style="display:flex;gap:16px;margin-top:4px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" checked> Visitantes</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox"> Proveedores</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-new-motivo')">Cancelar</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-new-motivo');showToast('Motivo guardado', 'success')">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+  // Page navigation
+  function showPage(pageId, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + pageId).classList.add('active');
+
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (el) el.classList.add('active');
+
+    const titles = {
+      dashboard: 'Dashboard',
+      usuarios: 'Gestión de Usuarios',
+      accesos: 'Entorno de Acceso',
+      reportes: 'Reportes de Acceso',
+      registros: 'Registros de Ingreso',
+      config: 'Configuración'
+    };
+    const bc = {
+      dashboard: 'Dashboard',
+      usuarios: 'Gestión · Usuarios',
+      accesos: 'Gestión · Entorno de Acceso',
+      reportes: 'Gestión · Reportes',
+      registros: 'Registros',
+      config: 'Configuración'
+    };
+    document.getElementById('topbar-title').textContent = titles[pageId] || pageId;
+    document.getElementById('topbar-bc').innerHTML = `<span>UniAccess</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg><span>${bc[pageId] || pageId}</span>`;
+  }
+
+  // Sub-tabs
+  function switchSubTab(el, tabId) {
+    const parent = el.closest('.report-tabs');
+    parent.querySelectorAll('.rtab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+
+    // Find sibling content areas
+    const page = el.closest('.page, .content');
+    page.querySelectorAll('.report-content').forEach(c => {
+      c.classList.remove('active');
+    });
+    const target = document.getElementById(tabId);
+    if (target) target.classList.add('active');
+  }
+
+  // Modal
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+  }
+
+  // Close on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('open');
+    });
+  });
+
+  // Toast
+  function showToast(msg, type = '') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> ${msg}`;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(4px)';
+      toast.style.transition = 'all 0.25s';
+      setTimeout(() => toast.remove(), 300);
+    }, 2800);
+  }
+
+  // Pagination buttons
+  document.querySelectorAll('.pg-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      this.closest('.pagination-pages').querySelectorAll('.pg-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Report tabs (top level)
+  document.querySelectorAll('.rtab').forEach(tab => {
+    if (!tab.getAttribute('onclick')) {
+      tab.addEventListener('click', function() {
+        this.closest('.report-tabs').querySelectorAll('.rtab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    }
+  });
+</script>
+</body>
+</html>
