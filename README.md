@@ -104,10 +104,9 @@ En las instituciones universitarias persisten deficiencias en el control de acce
 | CU-06 | Gestionar Código QR | Usuario Universitario |
 | CU-07 | Gestionar Biometría Facial | Usuario Universitario |
 | CU-08 | Consultar Historial de Ingresos | Usuario Universitario |
-| CU-09 | Actualizar Biometría Facial | Usuario Universitario |
-| CU-10 | Solicitar Ingreso como Visitante | Visitante Externo |
-| CU-11 | Renovar Permisos de Acceso | Visitante / Proveedor |
-| CU-12 | Solicitar Ingreso como Proveedor | Proveedor |
+| CU-9 | Solicitar Ingreso como Visitante | Visitante Externo |
+| CU-10 | Renovar Permisos de Acceso | Visitante / Proveedor |
+| CU-11 | Solicitar Ingreso como Proveedor | Proveedor |
 
 ---
 
