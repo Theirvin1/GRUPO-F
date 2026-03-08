@@ -181,7 +181,7 @@ Referencias
 | v6 | 48 | 16 RF, 7 RNF, 9 casos de uso detallados |
 | v7 | 61 | 19 RF, 11 CU, inicio de sesión, proveedores, SGA |
 | v8 | 64 | CU de actualización de biometría facial |
-| v9 | ~25 | Diagramas de secuencia, actividad, componente, despliegue, contexto y GitHub |
+| v9 | ~113 | Diagramas de secuencia, actividad, componente, despliegue, contexto y GitHub |
 
 > Ver el historial completo de cambios en [`CHANGELOG.md`](./CHANGELOG.md)
 
